@@ -1,5 +1,5 @@
 #Impliment this contract in Remix with Metamask for easiest compilation
-
+#Explained here - - https://docs.google.com/presentation/d/1vGhFoE2PJnFSSriccnBfZBaDuHmLri72gWXGhRAFicY/edit?usp=sharing
 pragma solidity ^0.4.16;
 contract HackATL {
     function totalSupply() public constant returns (uint256 supply) {}
