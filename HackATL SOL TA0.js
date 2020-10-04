@@ -80,7 +80,7 @@ contract HackATL {
         symbol = "HATL";
     }
     
-    function totalSupply() public constant returns (uint _totalSupply) {}
+    //function totalSupply() public constant returns (uint totalSupply); can be used in later implimentations
 
     //for contract interaction and interface
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
@@ -92,4 +92,5 @@ contract HackATL {
         return true;
     }
 }
+
 
