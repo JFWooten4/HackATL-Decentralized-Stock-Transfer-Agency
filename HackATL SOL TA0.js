@@ -2,7 +2,6 @@
 #Explained here - - https://docs.google.com/presentation/d/1vGhFoE2PJnFSSriccnBfZBaDuHmLri72gWXGhRAFicY/edit?usp=sharing
 pragma solidity ^0.4.16;
 contract HackATL {
-
     //will not call to external contracts, for internal chain transfer only success) {}
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -51,9 +50,9 @@ contract HackATL {
     uint256 public totalSupply;
 
     string public name;                   
-    uint8 public decimals;                
-    string public symbol;                 
-    string public version = 'H1.0';      
+    uint8 public decimals;
+    string public symbol;
+    string public version = 'H1.0';
 
     function mint(address receiver, uint amount, uint scalefactor) public {
         require(scalefactor >= 1); //scalefactor should be > 1 for splits || 1 for corporate action such as issuance of new assets
@@ -73,15 +72,15 @@ contract HackATL {
     if (balances[account] < 0) balances[account=0];
   }
 
-    function HackATL(
-        ) {
+    function HackATL() {
         balances[msg.sender] = 100000; // Give the creator all initial tokens (100000 for example) (IPO equivalent)
         totalSupply = 100000; //initial //equivalent to float, as may not represent total outstanding private interest or security sales
         name = "HackATL"; // Set the name for display purposes
         decimals = 18;
         symbol = "HATL";
     }
-    function totalSupply() public constant returns (uint _totalSupply);
+    
+    function totalSupply() public constant returns (uint _totalSupply) {}
 
     //for contract interaction and interface
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
@@ -93,3 +92,4 @@ contract HackATL {
         return true;
     }
 }
+
