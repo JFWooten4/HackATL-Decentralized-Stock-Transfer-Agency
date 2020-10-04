@@ -75,13 +75,12 @@ contract HackATL {
     function totalSupply() public constant returns (uint totalsupply);
 
 
-
-    function HackATL() {
+    constructor() HackATL() public {
         balances[msg.sender] = 100000; // Give the creator all initial tokens (100000 for example) (IPO equivalent)
         totalSupply = 100000; //initial //equivalent to float, as may not represent total outstanding private interest or security sales
-        name = "HackATL"; // Set the name for display purposes
-        decimals = 18;
-        symbol = "HATL";
+        name = "HackATL Class A Stock"; // Set the name for display purposes
+        decimals = 18; //stay same usu as long as compliant with penny-incriment rule
+        symbol = "HATL"; //Customize me :)
     }
 
     //for contract interaction and interface
