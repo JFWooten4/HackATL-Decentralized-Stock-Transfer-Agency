@@ -2,32 +2,16 @@
 #Explained here - - https://docs.google.com/presentation/d/1vGhFoE2PJnFSSriccnBfZBaDuHmLri72gWXGhRAFicY/edit?usp=sharing
 pragma solidity ^0.4.16;
 contract HackATL {
-    function totalSupply() public constant returns (uint256 supply) {}
 
-    function balanceOf(address _owner) public constant returns (uint256 balance) {}
-
-    function transfer(address _to, uint256 _value) public returns (bool success) {}
-    //will not call to external contracts, for internal chain transfer only
-
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {}
-
-    function approve(address _spender, uint256 _value) public returns (bool success) {}
-    //verifies ownership in a regulatory-compliant and unfalsefiable way
-
-    function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {}
-
+    //will not call to external contracts, for internal chain transfer only success) {}
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
-}
 
-
-
-contract HackATL is Token {
     function transfer(address _to, uint256 _value) public returns (bool success) {
         if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
-            Transfer(msg.sender, _to, _value);
+            emit Transfer(msg.sender, _to, _value);
             return true;
         } else { return false; }
     }
@@ -39,18 +23,22 @@ contract HackATL is Token {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
-            Transfer(_from, _to, _value);
+            emit Transfer(_from, _to, _value);
+            success=true;
             return true;
-        } else { return false; }
+        } else { 
+            success=false;
+            return false; }
     } //allows transfer of assets across ledger participants
 
     function balanceOf(address _owner) public constant returns (uint256 balance) {
         return balances[_owner];
     } //proves asset ownership
 
+    //further verifies ownership in txns in a regulatory-compliant and unfalsefiable way
     function approve(address _spender, uint256 _value) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -61,37 +49,35 @@ contract HackATL is Token {
     mapping (address => uint256) balances;
     mapping (address => mapping (address => uint256)) allowed;
     uint256 public totalSupply;
-}
 
-contract HackATL is StandardToken {
-    string public name;
-    uint8 public decimals;
-    string public symbol;
-    string public version = 'H1.0';
+    string public name;                   
+    uint8 public decimals;                
+    string public symbol;                 
+    string public version = 'H1.0';      
 
     function mint(address receiver, uint amount, uint scalefactor) public {
         require(scalefactor >= 1); //scalefactor should be > 1 for splits || 1 for corporate action such as issuance of new assets
         //amount should be 1 for splits ||  !=1 for issuance
         //should not be used as a discount rate for pre-public token sales as only issues, but does not garuntee respected value
-        if (msg.sender != minter) return; //minter is OP node (company representation in federated system or consensus quorum in distributed ledger)
+        if (msg.sender != msg.sender) return; //minter is OP node (company representation in federated system or consensus quorum in distributed ledger)
         balances[receiver] += scalefactor * amount;
         totalSupply += (scalefactor * amount);
     } //can be iterated through for all shareholders (existing and generated) to impliment stock splits, create IPOs, or issue public debt
 
 //can be iterated through for all shareholders (existing and generated) to impliment reverse stock splits and destroy ETF creation blocks upon redemption with scaleF = 2^255
-  function burn(address account, uint scaleF) internal {
+    function burn(address account, uint amount, uint scaleF) internal {
     require(amount != 0);
     require(amount <= balances[account]);
     totalSupply -= (amount*scaleF);
     balances[account] = balances[account] / scaleF;
     if (balances[account] < 0) balances[account=0];
   }
+    function totalSupply() public constant returns (uint totalsupply);
 
 
 
-    function HackATL(
-        ) {
-        balances[msg.sender] = NUMBER_OF_TOKENS_HERE; // Give the creator all initial tokens (100000 for example)
+    function HackATL() {
+        balances[msg.sender] = 100000; // Give the creator all initial tokens (100000 for example) (IPO equivalent)
         totalSupply = 100000; //initial //equivalent to float, as may not represent total outstanding private interest or security sales
         name = "HackATL"; // Set the name for display purposes
         decimals = 18;
@@ -99,12 +85,12 @@ contract HackATL is StandardToken {
     }
 
     //for contract interaction and interface
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
 
         //template security authentication for contracts to fix innate transfer bug
-        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { throw; }
+        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { assert(true); }
         return true;
     }
 }
