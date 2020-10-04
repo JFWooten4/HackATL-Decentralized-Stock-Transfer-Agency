@@ -11,7 +11,7 @@ contract HackATL {
         if (balances[msg.sender] >= _value && _value > 0) {
             balances[msg.sender] -= _value;
             balances[_to] += _value;
-            emit Transfer(msg.sender, _to, _value);
+            Transfer(msg.sender, _to, _value);
             return true;
         } else { return false; }
     }
@@ -23,7 +23,7 @@ contract HackATL {
             balances[_to] += _value;
             balances[_from] -= _value;
             allowed[_from][msg.sender] -= _value;
-            emit Transfer(_from, _to, _value);
+            Transfer(_from, _to, _value);
             success=true;
             return true;
         } else { 
@@ -38,7 +38,7 @@ contract HackATL {
     //further verifies ownership in txns in a regulatory-compliant and unfalsefiable way
     function approve(address _spender, uint256 _value) public returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
+        Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -72,24 +72,24 @@ contract HackATL {
     balances[account] = balances[account] / scaleF;
     if (balances[account] < 0) balances[account=0];
   }
-    function totalSupply() public constant returns (uint totalsupply);
 
-
-    constructor() HackATL() public {
+    function HackATL(
+        ) {
         balances[msg.sender] = 100000; // Give the creator all initial tokens (100000 for example) (IPO equivalent)
         totalSupply = 100000; //initial //equivalent to float, as may not represent total outstanding private interest or security sales
-        name = "HackATL Class A Stock"; // Set the name for display purposes
-        decimals = 18; //stay same usu as long as compliant with penny-incriment rule
-        symbol = "HATL"; //Customize me :)
+        name = "HackATL"; // Set the name for display purposes
+        decimals = 18;
+        symbol = "HATL";
     }
+    function totalSupply() public constant returns (uint _totalSupply);
 
     //for contract interaction and interface
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
         allowed[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
+        Approval(msg.sender, _spender, _value);
 
         //template security authentication for contracts to fix innate transfer bug
-        if(!_spender.call(bytes4(bytes32(keccak256("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { assert(true); }
+        if(!_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData)) { assert(true); }
         return true;
     }
 }
